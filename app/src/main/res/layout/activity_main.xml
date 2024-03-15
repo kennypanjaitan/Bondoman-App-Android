@@ -14,6 +14,7 @@
         android:layout_marginEnd="0dp"
         android:background="@color/slate_900"
         app:itemTextColor="@color/slate_300"
+        app:itemIconTint="@color/slate_300"
         app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
