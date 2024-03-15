@@ -1,6 +1,8 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -8,8 +10,13 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.myapplication.databinding.ActivityMainBinding
+import com.github.mikephil.charting.charts.PieChart
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var goPieChart: Button
+
+
 
     private lateinit var binding: ActivityMainBinding
 
@@ -18,6 +25,12 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        goPieChart = findViewById(R.id.pie_chart)
+
+        goPieChart.setOnClickListener{
+            startActivity(Intent(this@MainActivity,Statistics::class.java))
+        }
 
         val navView: BottomNavigationView = binding.navView
 
