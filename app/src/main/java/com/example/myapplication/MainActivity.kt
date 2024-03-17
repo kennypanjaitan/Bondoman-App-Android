@@ -25,11 +25,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        goPieChart = findViewById(R.id.pie_chart)
-
-        goPieChart.setOnClickListener{
-            startActivity(Intent(this@MainActivity,Statistics::class.java))
-        }
+//        goPieChart = findViewById(R.id.pie_chart)
+//
+//        goPieChart.setOnClickListener{
+//            startActivity(Intent(this@MainActivity,Statistics::class.java))
+//        }
 
         val navView: BottomNavigationView = binding.navView
 
