@@ -1,13 +1,15 @@
+// MainActivity.kt
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.myapplication.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.myapplication.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,8 +24,6 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_transactions, R.id.navigation_scan, R.id.navigation_statistics, R.id.navigation_settings
@@ -31,5 +31,21 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        // Check login status
+        if (!isLoggedIn()) {
+            navigateToLogin()
+        }
+    }
+
+    private fun isLoggedIn(): Boolean {
+        // Retrieve login status from SharedPreferences
+        val sharedPreferences = getSharedPreferences("login_status", MODE_PRIVATE)
+        return sharedPreferences.getBoolean("isLoggedIn", false)
+    }
+
+    private fun navigateToLogin() {
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish() // Close MainActivity
     }
 }
