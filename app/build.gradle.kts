@@ -51,7 +51,23 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    val camerax_version = "1.3.0"
+    // The following line is optional, as the core library is included indirectly by camera-camera2
+    implementation("androidx.camera:camera-core:${camerax_version}")
+    implementation("androidx.camera:camera-camera2:${camerax_version}")
+
+    // If you want to additionally use the CameraX Lifecycle library
+    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
+
+    // If you want to additionally use the CameraX View class
+    implementation("androidx.camera:camera-view:${camerax_version}")
 
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    // Include converter based on your serialization format (e.g., Gson, Jackson, Moshi)
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0") // Gson Converter
+    // Add additional dependencies if needed (e.g., logging interceptor)
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0") // L
 
 }
