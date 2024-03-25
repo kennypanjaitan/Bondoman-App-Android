@@ -1,0 +1,28 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Transactions">
+        <Preference
+            app:icon="@drawable/settings_file_download_24"
+            app:key="save_transactions"
+            app:title="@string/settings_save" />
+
+        <Preference
+            app:icon="@drawable/settings_email_24"
+            app:key="send_transactions"
+            app:title="@string/settings_send" />
+
+        <Preference
+            app:icon="@drawable/settings_random_24"
+            app:key="random_transactions"
+            app:title="@string/settings_random" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="User">
+        <Preference
+            app:icon="@drawable/settings_logout_24"
+            app:key="logout"
+            app:title="@string/settings_logout" />
+    </PreferenceCategory>
+
+
+</PreferenceScreen>
