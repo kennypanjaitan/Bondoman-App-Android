@@ -1,4 +1,5 @@
 <resources>
+    <!-- Title -->
     <string name="app_name">BondoMan</string>
     <string name="title_home">Home</string>
     <string name="title_transactions">Transactions</string>
@@ -6,19 +7,18 @@
     <string name="title_statistics">Statistics</string>
     <string name="title_settings">Settings</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <!-- Settings -->
+    <string name="settings_save">Save Transactions</string>
+    <string name="settings_send">Send Transactions</string>
+    <string name="settings_random">Randomize Transactions</string>
+    <string name="settings_logout">Logout</string>
 
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
 
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <!-- Text -->    
+    <string name="text_xlsx">.xlsx</string>
+    <string name="text_xls">.xls</string>
+    <string name="text_save">Save</string>
+    <string name="text_save_dialog">Select file format to save transactions</string>
+
     <string name="piechart" />
 </resources>
