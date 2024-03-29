@@ -34,12 +34,14 @@ class LoginActivity : AppCompatActivity() {
             // Perform login logic here
             if (isValidCredentials(email, password)) {
                 // Update login status to true
-                setLoggedIn(true)
+                setLoggedIn()
 
                 // Navigate to MainActivity
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
-                finish() // Close login activity
+
+                // Close login activity
+                finish()
             } else {
                 // Display error message or handle invalid login
             }
@@ -72,11 +74,11 @@ class LoginActivity : AppCompatActivity() {
         return email.isNotEmpty() && password == "password"
     }
 
-    private fun setLoggedIn(isLoggedIn: Boolean) {
+    private fun setLoggedIn() {
         // Save the login status using SharedPreferences or any other suitable method
         val sharedPreferences = getSharedPreferences("login_status", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putBoolean("isLoggedIn", isLoggedIn)
+        editor.putBoolean("isLoggedIn", true)
         editor.apply()
     }
 }

@@ -1,11 +1,22 @@
 <resources>
     <!-- Title -->
     <string name="app_name">BondoMan</string>
+    <string name="title_login">Login</string>
     <string name="title_home">Home</string>
     <string name="title_transactions">Transactions</string>
     <string name="title_scan">Scan</string>
     <string name="title_statistics">Statistics</string>
     <string name="title_settings">Settings</string>
+
+    <!-- Login -->
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Log in</string>
+
+    <!-- Filter Button Transactions -->
+    <string name="filter_all">All</string>
+    <string name="filter_income">Income</string>
+    <string name="filter_expense">Expense</string>
 
     <!-- Settings -->
     <string name="settings_save">Save Transactions</string>
@@ -13,12 +24,9 @@
     <string name="settings_random">Randomize Transactions</string>
     <string name="settings_logout">Logout</string>
 
-
     <!-- Text -->    
     <string name="text_xlsx">.xlsx</string>
     <string name="text_xls">.xls</string>
     <string name="text_save">Save</string>
     <string name="text_save_dialog">Select file format to save transactions</string>
-
-    <string name="piechart" />
 </resources>

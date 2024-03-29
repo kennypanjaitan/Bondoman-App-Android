@@ -36,8 +36,8 @@ class TransactionFragment : Fragment() {
         _binding = FragmentTransactionBinding.inflate(inflater, container, false)
         val root: View = binding.root
         val allBtn: Button = binding.allFilter
-        val expensesBtn: Button = binding.expensesFIlter
-        val incomeBtn: Button = binding.incomeIlter
+        val expensesBtn: Button = binding.expensesFilter
+        val incomeBtn: Button = binding.incomeFilter
         allBtn.setOnClickListener {
             allBtn.setBackgroundResource(R.drawable.textlineactive)
             expensesBtn.setBackgroundResource(R.drawable.textlines)
@@ -64,6 +64,8 @@ class TransactionFragment : Fragment() {
         transactionList.add(Transaction("Gaji Karyawan", "20 Desember 2024", "Perusahaan ABC", 7500000))
         transactionList.add(Transaction("Pembayaran Sewa", "25 Desember 2024", "Pemilik Apartemen", 2000000))
         transactionList.add(Transaction("Pengisian Bahan Bakar", "28 Desember 2024", "SPBU A", 300000))
+        transactionList.add(Transaction("Pembelian Makanan", "30 Desember 2024", "Warung Sederhana", 25000))
+        transactionList.add(Transaction("Pembayaran Listrik", "31 Desember 2024", "PLN", 500000))
 
 
 

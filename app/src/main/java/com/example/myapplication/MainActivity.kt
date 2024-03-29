@@ -1,12 +1,11 @@
 // MainActivity.kt
 package com.example.myapplication
 
-import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.myapplication.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
@@ -22,30 +21,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
+        val navController = navHostFragment!!.findNavController()
 
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        // Check login status
+        if (!isLoggedIn()) {
+            navController.navigate(R.id.loginActivity)
+        }
+
+        // Set up navigation
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_transactions, R.id.navigation_scan, R.id.navigation_statistics, R.id.navigation_settings
+                R.id.navigation_transactions, R.id.navigation_scan, R.id.navigation_statistics, R.id.navigation_settings
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
-        // Check login status
-        if (!isLoggedIn()) {
-            navigateToLogin()
-        }
     }
 
     private fun isLoggedIn(): Boolean {
         // Retrieve login status from SharedPreferences
         val sharedPreferences = getSharedPreferences("login_status", MODE_PRIVATE)
         return sharedPreferences.getBoolean("isLoggedIn", false)
-    }
-
-    private fun navigateToLogin() {
-        startActivity(Intent(this, LoginActivity::class.java))
-        finish() // Close MainActivity
     }
 }

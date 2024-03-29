@@ -1,12 +1,11 @@
 package com.example.myapplication.ui.settings
 
 import android.content.Context.MODE_PRIVATE
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.example.myapplication.LoginActivity
 import com.example.myapplication.R
 import com.example.myapplication.controllers.DialogController
 import com.example.myapplication.ui.saveTransactions.SaveTransactionsDialog
@@ -40,8 +39,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         editor.putBoolean("isLoggedIn", false)
         editor.apply()
 
-        // Navigate to LoginActivity and destroy MainActivity
-        startActivity(Intent(requireContext(), LoginActivity::class.java))
+        findNavController().navigate(R.id.loginActivity)
         requireActivity().finish()
     }
 
