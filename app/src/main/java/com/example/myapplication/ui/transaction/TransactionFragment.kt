@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.TransactionAdapter
 import com.example.myapplication.databinding.FragmentTransactionBinding
-import com.example.myapplication.model.Transaction
+import com.example.myapplication.models.Transaction
 
 class TransactionFragment : Fragment() {
 

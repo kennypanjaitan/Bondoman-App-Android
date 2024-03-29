@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import com.example.myapplication.model.LoginModel
+import com.example.myapplication.models.LoginModel
 import com.example.myapplication.retrofit.ApiService
 import com.example.myapplication.retrofit.LoginResponse
 import retrofit2.Call
