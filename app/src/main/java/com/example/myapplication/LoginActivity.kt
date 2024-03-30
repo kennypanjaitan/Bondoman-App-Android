@@ -18,7 +18,8 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        loginPost()
+//        loginPost()
+        var status = 0
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -28,41 +29,84 @@ class LoginActivity : AppCompatActivity() {
         val buttonLogin = findViewById<Button>(R.id.buttonLogin)
 
         buttonLogin.setOnClickListener {
-            val email = editTextEmail.text.toString()
-            val password = editTextPassword.text.toString()
+//            val email = editTextEmail.text.toString()
+//            val password = editTextPassword.text.toString()
+            val email = "13521001@std.stei.itb.ac.id"
+            val password = "password_13521001"
+            val loginModel = LoginModel(email,password)
 
-            // Perform login logic here
-            if (isValidCredentials(email, password)) {
-                // Update login status to true
+
+            printLog("email : " + email + " password : " + password)
+
+            ApiService.apiService.login(loginModel)
+                .enqueue(object : Callback<LoginResponse> {
+                    override fun onResponse(
+                        call: Call<LoginResponse>,
+                        response: Response<LoginResponse>
+                    ) {
+                        if(response.isSuccessful){
+                            status = response.code()
+//                            val token = response.body()?.token
+                            printLog(
+                                "status : " + status +
+                                        "token : " + response.body()?.token
+                            )
+                        }
+                        else{
+                            if(response.code() == 401){
+
+                            }
+                            // .....
+                        }
+                    }
+
+                    override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                        printLog(t.toString())
+                    }
+
+                })
+
+            printLog("status : " + status)
+
+            if(status == 200){
                 setLoggedIn()
+                startActivity(Intent(this, MainActivity::class.java))
 
-                // Navigate to MainActivity
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-
-                // Close login activity
                 finish()
-            } else {
-                // Display error message or handle invalid login
             }
+
+//            // Perform login logic here
+//            if () {
+//                // Update login status to true
+//                setLoggedIn()
+//
+//                // Navigate to MainActivity
+//                val intent = Intent(this, MainActivity::class.java)
+//                startActivity(intent)
+//
+//                // Close login activity
+//                finish()
+//            } else {
+//                // Display error message or handle invalid login
+//            }
         }
     }
 
-    private fun loginPost() {
-        val loginModel = LoginModel("13521004324324233211@std.stei.itb.ac.id", "password_13521001")
-        ApiService.apiService.login(loginModel)
-            .enqueue(object: Callback<LoginResponse>{
-                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>){
-                    val responseText = "Response code : ${response.code()}\n" +
-                            "token : ${response.body()?.token}" + "  --endtoken----"
-
-                    printLog(responseText)
-                }
-                override fun onFailure(call: Call<LoginResponse>, t: Throwable){
-                    printLog(t.toString())
-                }
-            })
-    }
+    //    private fun loginPost() {
+//        val loginModel = LoginModel("13521004324324233211@std.stei.itb.ac.id", "password_13521001")
+//        ApiService.apiService.login(loginModel)
+//            .enqueue(object: Callback<LoginResponse>{
+//                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>){
+//                    val responseText = "Response code : ${response.code()}\n" +
+//                            "token : ${response.body()?.token}" + "  --endtoken----"
+//
+//                    printLog(responseText)
+//                }
+//                override fun onFailure(call: Call<LoginResponse>, t: Throwable){
+//                    printLog(t.toString())
+//                }
+//            })
+//    }
     private fun printLog(message: String){
         Log.d("TokenResponse", message)
     }
