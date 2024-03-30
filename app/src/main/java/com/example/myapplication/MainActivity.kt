@@ -1,7 +1,9 @@
 // MainActivity.kt
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.myapplication.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +11,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.myapplication.retrofit.LoginResponse
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,9 +29,31 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment!!.findNavController()
 
         // Check login status
+
         if (!isLoggedIn()) {
-            navController.navigate(R.id.loginActivity)
+            Log.d("TokenResponse", "notLoggedIn")
+
+            val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
+            var token = sharedPreferences.getString("token", null)
+            var savedToken = token?.let { LoginResponse(it) }
+
+            Log.d("TokenResponse", "token sebelum login : " + savedToken.toString())
+
+            val loginIntent = Intent(this, LoginActivity::class.java)
+            startActivity(loginIntent)
+
+
         }
+        else {
+            val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
+            val updatedToken = sharedPreferences.getString("token", null)
+            val updatedSavedToken = updatedToken?.let { LoginResponse(it) }
+
+            Log.d("TokenResponse", "token setelah login : " + updatedSavedToken.toString())
+
+            Log.d("TokenResponse", "isLoggedIn")
+        }
+
 
         // Set up navigation
         val appBarConfiguration = AppBarConfiguration(
@@ -40,8 +66,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isLoggedIn(): Boolean {
+//        Log.d("TokenResponse", "change Status tu login")
         // Retrieve login status from SharedPreferences
-        val sharedPreferences = getSharedPreferences("login_status", MODE_PRIVATE)
-        return sharedPreferences.getBoolean("isLoggedIn", false)
+        val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
+
+        val token = sharedPreferences.getString("token", null)
+        val savedToken = token?.let { LoginResponse(it) }
+        Log.d("TokenResponse", "token di isLoggedIn : " + savedToken.toString())
+
+        return if(savedToken == null){
+            sharedPreferences.getBoolean("isLoggedIn", false)
+        } else {
+            sharedPreferences.getBoolean("isLoggedIn", true)
+        }
     }
 }
