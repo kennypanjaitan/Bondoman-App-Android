@@ -1,6 +1,9 @@
 package com.example.myapplication.ui.settings
 
+import android.content.ActivityNotFoundException
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
@@ -25,6 +28,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 this::onClickLogout
             )
             "save_transactions" -> onClickSave()
+            "send_transactions" -> onClickSend()
         }
         return super.onPreferenceTreeClick(preference)
     }
@@ -45,5 +49,29 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun onClickSave() {
         SaveTransactionsDialog().show(requireActivity().supportFragmentManager, "SaveTransactionsDialog")
+    }
+
+    private fun onClickSend() {
+        /**
+         * TODO:
+         * 1. Change action to SEND, for sending attachment
+         * 2. Solve problem: Gmail not found as email client when ACTION_SEND
+         */
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_SUBJECT, "Transaction Data")
+            putExtra(Intent.EXTRA_EMAIL, "13521023@std.stei.itb.ac.id")
+            putExtra(Intent.EXTRA_TEXT, "This is all the transactions data from BondoMan")
+        }
+
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            DialogController.showDialogAlert(
+                requireContext(),
+                "Error",
+                "No email app found, please install one first"
+            )
+        }
     }
 }

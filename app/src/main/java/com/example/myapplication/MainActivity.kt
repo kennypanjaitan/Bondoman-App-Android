@@ -11,7 +11,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,8 +26,8 @@ class MainActivity : AppCompatActivity() {
         // Check login status
         if (!isLoggedIn()) {
             navController.navigate(R.id.loginActivity)
+            finish()
         }
-
         // Set up navigation
         val appBarConfiguration = AppBarConfiguration(
             setOf(
