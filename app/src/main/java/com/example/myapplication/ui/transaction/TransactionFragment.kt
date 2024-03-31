@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.TransactionAdapter
 import com.example.myapplication.databinding.FragmentTransactionBinding
-import com.example.myapplication.models.CategoryEnum
 import com.example.myapplication.room.TransactionDB
 import com.example.myapplication.room.TransactionEntity
 import kotlinx.coroutines.CoroutineScope
@@ -69,7 +68,12 @@ class TransactionFragment : Fragment() {
         recyclerView = binding.transactionView
 //        recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        transactionAdapter = TransactionAdapter(arrayListOf())
+        transactionAdapter = TransactionAdapter(arrayListOf(), object : TransactionAdapter.OnAdapterListener{
+            override fun onClick(transaction: TransactionEntity) {
+                Log.d("memek", "DETAIL")
+                intentDetail(transaction.id)
+            }
+        })
         CoroutineScope(Dispatchers.IO).launch {
 //
             val transactionList = transactionDB.transactionDao().getAllTransactions()
@@ -79,6 +83,12 @@ class TransactionFragment : Fragment() {
         }
         recyclerView.adapter = transactionAdapter
         return root
+    }
+
+    private fun intentDetail(transactionID: Int){
+        val bundle = Bundle()
+        bundle.putInt("transactionID", transactionID)
+        findNavController().navigate(R.id.DetailTransaction, bundle)
     }
 
 

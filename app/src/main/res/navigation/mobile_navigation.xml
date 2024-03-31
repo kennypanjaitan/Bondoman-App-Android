@@ -40,5 +40,13 @@
         android:name="com.example.myapplication.ui.transaction.FormTransaction"
         android:label="New Transaction"/>
 
+    <fragment
+        android:id="@+id/DetailTransaction"
+        android:name="com.example.myapplication.ui.transaction.DetailTransaction"
+        android:label="Transaction">
+    </fragment>
+
+
+
 
 </navigation>
