@@ -9,14 +9,17 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.example.myapplication.model.LoginModel
 import com.example.myapplication.retrofit.ApiService
 import com.example.myapplication.retrofit.LoginResponse
+import okhttp3.FormBody
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import okhttp3.*
+import org.json.JSONObject
+import java.io.IOException
 
 class LoginActivity : AppCompatActivity() {
 
@@ -61,9 +64,52 @@ class LoginActivity : AppCompatActivity() {
 //                            val navController = navHostFragment!!.findNavController()
 //                            navController.navigate(R.id.container)
 
-                            setLoggedIn()
-                            setResult(Activity.RESULT_OK)
-                            finish()
+//                            send token to get expired date
+                            val client = OkHttpClient()
+                            val url = "https://pbd-backend-2024.vercel.app/api/auth/token"
+                            val formBody = FormBody.Builder().build()
+
+                            val request = Request.Builder()
+                                .url(url)
+                                .post(formBody)
+                                .addHeader("Authorization", "Bearer ${token}")
+                                .build()
+
+                            client.newCall(request).enqueue(object : okhttp3.Callback {
+                                override fun onFailure(call: okhttp3.Call, e: IOException){
+                                    Log.d("Service Error", e.toString())
+                                }
+
+                                override fun onResponse(call: okhttp3.Call, responseExp: okhttp3.Response) {
+//                                    Log.d("TokenResponse", "responsecode : ${responseExp.code}")
+//                                    Log.d("TokenResponse", responseExp.body!!.string())
+                                    if(responseExp.isSuccessful){
+                                        val jsonResponse = JSONObject(responseExp.body!!.string())
+                                        val expVal = jsonResponse.getLong("exp")
+
+                                        Log.d("TokenResponse", "expVal : " + expVal)
+
+                                        val expTimePreferences = getSharedPreferences("expiredTokenDate", MODE_PRIVATE)
+                                        val editor = expTimePreferences.edit()
+                                        editor.putLong("expTime", expVal - 280)
+                                        editor.apply()
+
+                                        Log.d("TokenResponse", "exptimereferences : " +
+                                            expTimePreferences.getLong("expTime", 0).toString()
+                                        )
+
+                                        setLoggedIn()
+                                        setResult(Activity.RESULT_OK)
+                                        finish()
+//                                                val responseData = response.body!!.string()
+//                                                Log.d("TokenResponse", "responseService : $responseData")
+                                    }
+                                    else{
+//                                                Log.d("TokenResponse", "masuk onresponse tapi gak bisa apa2")
+
+                                    }
+                                }
+                            })
                         }
                         else{
                             if(response.code() == 401){
@@ -88,6 +134,7 @@ class LoginActivity : AppCompatActivity() {
         // Save the login status using SharedPreferences or any other suitable method
         val sharedPreferences = getSharedPreferences("login_status", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
+        startService(Intent(this, BackgroundService::class.java))
         editor.putBoolean("isLoggedIn", true)
         editor.apply()
     }
