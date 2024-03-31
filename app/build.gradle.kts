@@ -73,4 +73,6 @@ dependencies {
     // Add additional dependencies if needed (e.g., logging interceptor)
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0") // L
 
+    // background service
+    implementation ("androidx.work:work-runtime:2.9.0")
 }

@@ -28,6 +28,9 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
         val navController = navHostFragment!!.findNavController()
 
+        // run service
+        startService(Intent(this, BackgroundService::class.java))
+
         // Check login status
 
         if (!isLoggedIn()) {
@@ -35,9 +38,8 @@ class MainActivity : AppCompatActivity() {
 
             val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
             var token = sharedPreferences.getString("token", null)
-            var savedToken = token?.let { LoginResponse(it) }
 
-            Log.d("TokenResponse", "token sebelum login : " + savedToken.toString())
+            Log.d("TokenResponse", "token sebelum login : " + token)
 
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
@@ -47,9 +49,8 @@ class MainActivity : AppCompatActivity() {
         else {
             val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
             val updatedToken = sharedPreferences.getString("token", null)
-            val updatedSavedToken = updatedToken?.let { LoginResponse(it) }
 
-            Log.d("TokenResponse", "token setelah login : " + updatedSavedToken.toString())
+            Log.d("TokenResponse", "token setelah login : " + updatedToken)
 
             Log.d("TokenResponse", "isLoggedIn")
         }
@@ -66,18 +67,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isLoggedIn(): Boolean {
-//        Log.d("TokenResponse", "change Status tu login")
-        // Retrieve login status from SharedPreferences
-        val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
-
-        val token = sharedPreferences.getString("token", null)
-        val savedToken = token?.let { LoginResponse(it) }
-        Log.d("TokenResponse", "token di isLoggedIn : " + savedToken.toString())
-
-        return if(savedToken == null){
-            sharedPreferences.getBoolean("isLoggedIn", false)
-        } else {
-            sharedPreferences.getBoolean("isLoggedIn", true)
-        }
+        val sharedPreferences = getSharedPreferences("login_status", MODE_PRIVATE)
+        return sharedPreferences.getBoolean("isLoggedIn", false)
     }
 }
