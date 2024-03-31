@@ -10,12 +10,13 @@ abstract class TransactionDB : RoomDatabase() {
     abstract fun transactionDao() : TransactionDAO
 
     companion object {
-        @Volatile
-        private var instance: TransactionDB? = null
 
-        fun getInstance(context: Context): TransactionDB {
-            return instance ?: synchronized(this) {
-                instance ?: buildDatabase(context)
+        @Volatile private var instance : TransactionDB? = null
+        private val LOCK = Any()
+
+        operator fun invoke(context: Context) = instance ?: synchronized(LOCK){
+            instance ?: buildDatabase(context).also {
+                instance = it
             }
         }
 
@@ -23,9 +24,6 @@ abstract class TransactionDB : RoomDatabase() {
             context.applicationContext,
             TransactionDB::class.java,
             "transaction.db"
-        )
-            .fallbackToDestructiveMigration()
-            .build()
-            .also { instance = it }
+        ).build()
     }
 }

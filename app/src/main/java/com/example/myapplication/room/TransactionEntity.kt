@@ -20,6 +20,12 @@ data class TransactionEntity(
     @ColumnInfo(name = "location")
     val location: String,
 
+    @ColumnInfo(name = "Latitude")
+    val latitude: Double,
+
+    @ColumnInfo(name = "Longitude")
+    val longitude: Double,
+
     @ColumnInfo(name = "nominal")
     val nominal: Int,
 
