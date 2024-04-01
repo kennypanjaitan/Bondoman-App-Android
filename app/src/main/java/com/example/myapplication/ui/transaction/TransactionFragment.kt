@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.transaction
 
+import TransactionViewModelFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +18,7 @@ import com.example.myapplication.TransactionAdapter
 import com.example.myapplication.databinding.FragmentTransactionBinding
 import com.example.myapplication.room.TransactionDB
 import com.example.myapplication.room.TransactionEntity
+import androidx.lifecycle.Observer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,22 +27,16 @@ import kotlinx.coroutines.withContext
 class TransactionFragment : Fragment() {
 
     private var _binding: FragmentTransactionBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
     private lateinit var transactionAdapter: TransactionAdapter
-    private val transactionDB by lazy { TransactionDB(requireContext()) }
+    private val transactionViewModel: TransactionViewModel by viewModels { TransactionViewModelFactory(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val transactionViewModel =
-            ViewModelProvider(this).get(TransactionViewModel::class.java)
-
         _binding = FragmentTransactionBinding.inflate(inflater, container, false)
         val root: View = binding.root
         val allBtn: Button = binding.allFilter
@@ -66,23 +63,26 @@ class TransactionFragment : Fragment() {
         }
 
         recyclerView = binding.transactionView
-//        recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         transactionAdapter = TransactionAdapter(arrayListOf(), object : TransactionAdapter.OnAdapterListener{
             override fun onClick(transaction: TransactionEntity) {
-                Log.d("memek", "DETAIL")
                 intentDetail(transaction.id)
             }
         })
-        CoroutineScope(Dispatchers.IO).launch {
-//
-            val transactionList = transactionDB.transactionDao().getAllTransactions()
-            withContext(Dispatchers.Main) {
-                transactionAdapter.setData(transactionList)
-            }
-        }
         recyclerView.adapter = transactionAdapter
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //observe live data
+        transactionViewModel.listTransaction.observe(viewLifecycleOwner, Observer { transactions ->
+            transactionAdapter.setData(transactions)
+        })
+
+        //fetch data
+        transactionViewModel.getAllData()
     }
 
     private fun intentDetail(transactionID: Int){

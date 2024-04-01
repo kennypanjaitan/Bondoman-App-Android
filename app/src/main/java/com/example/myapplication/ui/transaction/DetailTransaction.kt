@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.transaction
 
+import TransactionViewModelFactory
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -22,6 +23,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentDetailTransactionBinding
@@ -29,6 +31,7 @@ import com.example.myapplication.models.CategoryEnum
 import com.example.myapplication.room.TransactionDB
 import com.example.myapplication.room.TransactionEntity
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -46,12 +49,11 @@ import kotlin.coroutines.suspendCoroutine
 
 class DetailTransaction: Fragment(), OnMapReadyCallback{
     private var _binding: FragmentDetailTransactionBinding? = null
+    private val transactionViewModel: TransactionViewModel by viewModels { TransactionViewModelFactory(requireContext()) }
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var gMap: GoogleMap
     private val binding get() = _binding!!
     private var transactionID: Int = 0
-    private val transactionDB by lazy { TransactionDB(requireContext()) }
-    private lateinit var transaction: TransactionEntity
     private lateinit var category: ArrayList<String>
     private lateinit var adapterItems: ArrayAdapter<String>
     private var latitude: Double = 0.0
@@ -72,16 +74,8 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
         }
         _binding = FragmentDetailTransactionBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
         transactionID = arguments?.getInt("transactionID")!!
-//        setLabel()
-        CoroutineScope(Dispatchers.Main).launch {
-            try {
-                getData()
-                setLabel()
-            } catch (e: Exception) {
-                Log.d("memek", "Failed to add note: ${e.message}")
-            }
-        }
 
         binding.savebtn.setOnClickListener{
             saveTransaction()
@@ -103,21 +97,19 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
     }
-    private suspend fun getData() {
-        transaction = suspendCoroutine { continuation ->
-            CoroutineScope(Dispatchers.IO).launch {
-                val result = transactionDB.transactionDao().getTransaction(transactionID)
-                if (result.isNotEmpty()) {
-                    continuation.resume(result[0])
-                } else {
-                    // Handle error or return default value
-                    continuation.resumeWith(Result.failure(RuntimeException("Transaction not found")))
-                }
-            }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        transactionViewModel.transaction.observe(requireActivity()){transaction ->
+            setLabel(transaction)
         }
+
+        //fetch data
+        transactionViewModel.getTransaction(transactionID)
     }
 
-    private fun setLabel() {
+    private fun setLabel(transaction: TransactionEntity) {
         binding.inputTitle.setText(transaction.title)
         binding.inputNominal.setText(transaction.nominal.toString())
         binding.inputDate.setText(transaction.date)
@@ -154,19 +146,24 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
             ActivityCompat.requestPermissions(requireActivity(),
                 arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),100
             )
-            return
         }
         val location = fusedLocationProviderClient.lastLocation
         location.addOnSuccessListener {
             if (it!=null){
+                Log.d("bewe", "masuk")
                 val temp = it.latitude
                 latitude = temp
                 longitude = it.longitude
+
                 val geocoder = Geocoder(requireContext(), Locale.getDefault())
                 try {
                     val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
                     val obj: Address = addresses!![0]
                     address = obj.locality
+                    val location = LatLng(latitude,longitude)
+                    gMap.resetMinMaxZoomPreference()
+                    gMap.addMarker(MarkerOptions().position(location).title(address))
+                    gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16F))
                 } catch (e: IOException) {
                     Toast.makeText(requireContext(), "Failed to get location", Toast.LENGTH_SHORT).show()
                     e.printStackTrace()
@@ -190,12 +187,7 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
             if (categoryS == "Income") {
                 type = CategoryEnum.INCOME
             }
-            CoroutineScope(Dispatchers.IO).launch {
-
-                transactionDB.transactionDao().updateTransaction(
-                    TransactionEntity(transactionID, title, date, address, latitude, longitude, nominal, type)
-                )
-            }
+            transactionViewModel.updateTransaction(TransactionEntity(transactionID, title, date, address, latitude, longitude, nominal, type))
             val navController = findNavController()
             navController.navigate(R.id.navigation_transactions)
         }
@@ -206,7 +198,11 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
             .setMessage("Are you sure you want to delete this transaction?")
             .setTitle("Delete Transaction")
             .setPositiveButton("Delete") { dialog, which ->
-                deleteTransaction()
+                transactionViewModel.transaction.value?.let {
+                    transactionViewModel.deleteTransaction(
+                        it
+                    )
+                }
                 dialog.dismiss()
                 findNavController().navigate(R.id.navigation_transactions)
             }
@@ -216,15 +212,6 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
 
         val dialog: AlertDialog = builder.create()
         dialog.show()
-    }
-    private fun deleteTransaction(){
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                transactionDB.transactionDao().deleteTransaction(transaction)
-            } catch (e: Exception) {
-                Log.d("memek", "Failed to add note: ${e.message}")
-            }
-        }
     }
 
     private fun inputValidated(title: String, nominal: Int, category: String, date: String): Boolean{

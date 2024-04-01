@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.transaction
 
+import TransactionViewModelFactory
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.icu.text.SimpleDateFormat
@@ -17,8 +18,10 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
+import com.example.myapplication.adapter.LocationAdapter
 import com.example.myapplication.databinding.FragmentFormTransactionBinding
 import com.example.myapplication.models.CategoryEnum
 import com.example.myapplication.room.TransactionDB
@@ -35,16 +38,13 @@ import java.util.Locale
 
 class FormTransaction: Fragment() {
     private var _binding: FragmentFormTransactionBinding? = null
+    private val transactionViewModel: TransactionViewModel by viewModels { TransactionViewModelFactory(requireContext()) }
 
     private lateinit var category: ArrayList<String>
     private lateinit var adapterItems: ArrayAdapter<String>
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private var latitude: Double = 0.0
-    private var longitude: Double = 0.0
+    private lateinit var locationAdapter: LocationAdapter
     private var categoryS: String = ""
     private val binding get() = _binding!!
-    private val transactionDB by lazy { TransactionDB(requireContext()) }
-    private var address: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,7 +59,8 @@ class FormTransaction: Fragment() {
         category.add("Income")
         val autoCompleted = binding.autoCompleteTxt
         adapterItems = ArrayAdapter(requireContext(), R.layout.dropdown, category)
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        locationAdapter = LocationAdapter(requireContext(),requireActivity())
+        locationAdapter.getLocation()
         autoCompleted.setAdapter(adapterItems)
         autoCompleted.inputType = EditorInfo.TYPE_NULL
         autoCompleted.onItemClickListener = AdapterView.OnItemClickListener {
@@ -67,9 +68,8 @@ class FormTransaction: Fragment() {
 
             categoryS = adapterView.getItemAtPosition(i).toString()
         }
-
         binding.addtrans.setOnClickListener{
-            addTransaction()
+            submit()
         }
         return root
     }
@@ -77,55 +77,25 @@ class FormTransaction: Fragment() {
     @SuppressLint("SimpleDateFormat")
     private fun submit() {
         val title = binding.inputTitle.text.toString()
-        val nominal = binding.inputNominal.text.toString().toInt()
         val sdf = SimpleDateFormat("dd/M/yyyy hh:mm")
         val currentDate = sdf.format(Date())
+        val nominal = binding.inputNominal.text.toString().toInt()
+        val address = locationAdapter.getAddress()
+        val latitude = locationAdapter.getLatitude()
+        val longitude = locationAdapter.getLongitude()
         if (inputValidated(title, nominal, categoryS)){
             var type = CategoryEnum.EXPENSE
             if (categoryS == "Income") {
                 type = CategoryEnum.INCOME
             }
-            CoroutineScope(Dispatchers.IO).launch {
-
-                transactionDB.transactionDao().addTransaction(
-                    TransactionEntity(0, title, currentDate, address, latitude, longitude, nominal, type)
-                )
-            }
+            transactionViewModel.insertTransaction(
+                TransactionEntity(0, title, currentDate, address, latitude, longitude, nominal, type)
+            )
             val navController = findNavController()
             navController.navigate(R.id.navigation_transactions)
         }
     }
 
-    private fun addTransaction() {
-        if (ActivityCompat.checkSelfPermission(requireContext(),android.Manifest.permission.ACCESS_FINE_LOCATION )
-            != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
-        != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(requireActivity(),
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),100
-            )
-            return
-    }
-
-        val location = fusedLocationProviderClient.lastLocation
-        location.addOnSuccessListener {
-            if (it!=null){
-                val temp = it.latitude
-                latitude = temp
-                longitude = it.longitude
-                val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                try {
-                    val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
-                    val obj: Address = addresses!![0]
-                    address = obj.locality
-                } catch (e: IOException) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace()
-                }
-                submit()
-            }
-        }
-}
 
 
     private fun inputValidated(title: String, nominal: Int, category: String): Boolean{
