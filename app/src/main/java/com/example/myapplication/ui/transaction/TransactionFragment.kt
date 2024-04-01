@@ -1,38 +1,42 @@
 package com.example.myapplication.ui.transaction
 
+import TransactionViewModelFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.TransactionAdapter
 import com.example.myapplication.databinding.FragmentTransactionBinding
-import com.example.myapplication.model.Transaction
+import com.example.myapplication.room.TransactionDB
+import com.example.myapplication.room.TransactionEntity
+import androidx.lifecycle.Observer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TransactionFragment : Fragment() {
 
     private var _binding: FragmentTransactionBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
-    private lateinit var transactionList: ArrayList<Transaction>
     private lateinit var transactionAdapter: TransactionAdapter
+    private val transactionViewModel: TransactionViewModel by viewModels { TransactionViewModelFactory(requireContext()) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val transactionViewModel =
-            ViewModelProvider(this).get(TransactionViewModel::class.java)
-
         _binding = FragmentTransactionBinding.inflate(inflater, container, false)
         val root: View = binding.root
         val allBtn: Button = binding.allFilter
@@ -53,26 +57,38 @@ class TransactionFragment : Fragment() {
             expensesBtn.setBackgroundResource(R.drawable.textlines)
             incomeBtn.setBackgroundResource(R.drawable.textlineactive)
         }
+        binding.addbutton.setOnClickListener{
+            val navController = findNavController()
+            navController.navigate(R.id.navigation_formTransaction)
+        }
 
         recyclerView = binding.transactionView
-//        recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        transactionList = ArrayList()
-        transactionList.add(Transaction("Proyek Tubes", "12 Desember 2024", "Koica", 100000))
-        transactionList.add(Transaction("Pembelian Barang", "15 Desember 2024", "Supplier X", 50000))
-        transactionList.add(Transaction("Gaji Karyawan", "20 Desember 2024", "Perusahaan ABC", 7500000))
-        transactionList.add(Transaction("Pembayaran Sewa", "25 Desember 2024", "Pemilik Apartemen", 2000000))
-        transactionList.add(Transaction("Pengisian Bahan Bakar", "28 Desember 2024", "SPBU A", 300000))
-        transactionList.add(Transaction("Pembelian Makanan", "30 Desember 2024", "Warung Sederhana", 25000))
-        transactionList.add(Transaction("Pembayaran Listrik", "31 Desember 2024", "PLN", 500000))
-
-
-
-
-        transactionAdapter = TransactionAdapter(transactionList)
+        transactionAdapter = TransactionAdapter(arrayListOf(), object : TransactionAdapter.OnAdapterListener{
+            override fun onClick(transaction: TransactionEntity) {
+                intentDetail(transaction.id)
+            }
+        })
         recyclerView.adapter = transactionAdapter
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //observe live data
+        transactionViewModel.listTransaction.observe(viewLifecycleOwner, Observer { transactions ->
+            transactionAdapter.setData(transactions)
+        })
+
+        //fetch data
+        transactionViewModel.getAllData()
+    }
+
+    private fun intentDetail(transactionID: Int){
+        val bundle = Bundle()
+        bundle.putInt("transactionID", transactionID)
+        findNavController().navigate(R.id.DetailTransaction, bundle)
     }
 
 

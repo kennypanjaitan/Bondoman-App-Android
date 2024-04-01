@@ -29,4 +29,6 @@
     <string name="text_xls">.xls</string>
     <string name="text_save">Save</string>
     <string name="text_save_dialog">Select file format to save transactions</string>
+    <string name="title">Title</string>
+    <string name="transID">ID</string>
 </resources>

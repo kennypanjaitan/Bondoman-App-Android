@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import com.example.myapplication.model.LoginModel
+import com.example.myapplication.models.LoginModel
 import com.example.myapplication.retrofit.ApiService
 import com.example.myapplication.retrofit.LoginResponse
 import okhttp3.FormBody

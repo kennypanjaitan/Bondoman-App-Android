@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="editTextEmail" type="id" />
+    <item name="body" type="id" />
+    <item name="yesBtn" type="id" />
+    <item name="noBtn" type="id" />
 </resources>
