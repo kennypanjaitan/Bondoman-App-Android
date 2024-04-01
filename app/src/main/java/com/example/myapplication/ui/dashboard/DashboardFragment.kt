@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.dashboard
 
 import android.Manifest
+import android.app.Activity.MODE_PRIVATE
 import android.app.Activity.RESULT_OK
 import android.content.ContentValues.TAG
 import android.content.DialogInterface
@@ -34,8 +35,18 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.FragmentDashboardBinding
 import com.example.myapplication.utils.appSettingOpen
 import com.example.myapplication.utils.warningPermissionDialog
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import android.content.Context
+import okhttp3.Call
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 
 class DashboardFragment : Fragment() {
 
@@ -89,6 +100,9 @@ class DashboardFragment : Fragment() {
         }
         binding.retakebtn.setOnClickListener{
             displayCamera()
+        }
+        binding.uploadbtn.setOnClickListener{
+            uploadPict()
         }
         cameraExecutor = Executors.newSingleThreadExecutor()
         return root
@@ -166,6 +180,43 @@ class DashboardFragment : Fragment() {
                 }
             }
         )
+    }
+
+    private fun uploadPict() {
+        val requestFile = bitmap.toString().toRequestBody("image/jpg".toMediaTypeOrNull())
+//        val body = MultipartBody.Part.createFormData("file", "image.jpg",requestFile)
+        val body = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addPart(MultipartBody.Part.createFormData("file", "image.jpg", requestFile))
+            .build()
+
+        val sharedPreferences = requireContext().getSharedPreferences("token", MODE_PRIVATE)
+        val token = sharedPreferences.getString("token", null)
+        val client = OkHttpClient()
+        val url = "https://pbd-backend-2024.vercel.app/api/bill/upload"
+
+        val request = Request.Builder()
+            .url(url)
+            .post(body)
+//            .addHeader("Authorization", "Bearer ${token}")
+            .addHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaW0iOiIxMzUyMTAwMSIsImlhdCI6MTcxMTk4NTUwOSwiZXhwIjoxNzExOTg1ODA5fQ.g0gH2VM6E361jLjdkyfINN1d3yh2HG9z_js0LuShuf0")
+            .build()
+
+        client.newCall(request).enqueue(object : okhttp3.Callback{
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d("Service Error", e.toString())
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if(response.isSuccessful){
+                    val jsonResponse = JSONObject(response.body!!.string())
+
+                    Log.d("asd", jsonResponse.toString())
+                }
+            }
+
+        })
+
     }
 
 
