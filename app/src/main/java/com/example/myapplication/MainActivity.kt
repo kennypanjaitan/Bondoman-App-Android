@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment!!.findNavController()
 
         // run service
-//        startService(Intent(this, BackgroundService::class.java))
+        startService(Intent(this, BackgroundService::class.java))
 
         // Check login status
 

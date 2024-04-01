@@ -99,7 +99,9 @@ class LoginActivity : AppCompatActivity() {
                                         )
 
                                         setLoggedIn()
-                                        setResult(Activity.RESULT_OK)
+
+                                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+
                                         finish()
 //                                                val responseData = response.body!!.string()
 //                                                Log.d("TokenResponse", "responseService : $responseData")
@@ -134,7 +136,7 @@ class LoginActivity : AppCompatActivity() {
         // Save the login status using SharedPreferences or any other suitable method
         val sharedPreferences = getSharedPreferences("login_status", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        startService(Intent(this, BackgroundService::class.java))
+//        startService(Intent(this, BackgroundService::class.java))
         editor.putBoolean("isLoggedIn", true)
         editor.apply()
     }
