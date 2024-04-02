@@ -1,4 +1,3 @@
-// LoginActivity.kt
 package com.example.myapplication
 
 import android.app.Activity
@@ -91,11 +90,11 @@ class LoginActivity : AppCompatActivity() {
 
                                         val expTimePreferences = getSharedPreferences("expiredTokenDate", MODE_PRIVATE)
                                         val editor = expTimePreferences.edit()
-                                        editor.putLong("expTime", expVal - 280)
+                                        editor.putLong("expTime", expVal)
                                         editor.apply()
 
                                         Log.d("TokenResponse", "exptimereferences : " +
-                                            expTimePreferences.getLong("expTime", 0).toString()
+                                                expTimePreferences.getLong("expTime", 0).toString()
                                         )
 
                                         setLoggedIn()

@@ -26,8 +26,8 @@ import com.example.myapplication.databinding.FragmentFormTransactionBinding
 import com.example.myapplication.models.CategoryEnum
 import com.example.myapplication.room.TransactionDB
 import com.example.myapplication.room.TransactionEntity
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+//import com.google.android.gms.location.FusedLocationProviderClient
+//import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,7 +64,7 @@ class FormTransaction: Fragment() {
         autoCompleted.setAdapter(adapterItems)
         autoCompleted.inputType = EditorInfo.TYPE_NULL
         autoCompleted.onItemClickListener = AdapterView.OnItemClickListener {
-            adapterView, view, i, l ->
+                adapterView, view, i, l ->
 
             categoryS = adapterView.getItemAtPosition(i).toString()
         }
@@ -112,8 +112,4 @@ class FormTransaction: Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-
-
-
 }

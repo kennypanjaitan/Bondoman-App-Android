@@ -211,7 +211,23 @@ class DashboardFragment : Fragment() {
                 if(response.isSuccessful){
                     val jsonResponse = JSONObject(response.body!!.string())
 
+                    val itemsObject = jsonResponse.getJSONObject("items")
+                    val itemsArray = itemsObject.getJSONArray("items")
+
+                    var totalPrice = 0.0
+
+                    for(i in 0 until itemsArray.length()){
+                        val item = itemsArray.getJSONObject(i)
+                        val price = item.getDouble("price") * item.getInt("qty")
+                        totalPrice += price
+                    }
+
+                    // yg di ambil nanti
+                    // val title = itemsArray.getJSONObject(0).getString("name")
+                    // totalPrice
+
                     Log.d("asd", jsonResponse.toString())
+                    Log.d("asd", "total : $totalPrice")
                 }
             }
 
