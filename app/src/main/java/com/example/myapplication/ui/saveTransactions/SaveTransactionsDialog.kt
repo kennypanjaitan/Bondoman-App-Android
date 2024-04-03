@@ -9,10 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import com.example.myapplication.R
 import com.example.myapplication.controllers.SpreadsheetController
 import com.example.myapplication.databinding.FragmentSaveTransactionsDialogBinding
 import com.example.myapplication.models.FileFormat
+import com.example.myapplication.ui.transaction.TransactionViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
@@ -20,6 +22,7 @@ class SaveTransactionsDialog : BottomSheetDialogFragment() {
     private var _binding: FragmentSaveTransactionsDialogBinding? = null
     private val binding get() = _binding!!
     private val CREATE_FILE = 1
+    private val transactionViewModel: TransactionViewModel by activityViewModels()
     private lateinit var saveExtension: FileFormat
 
     override fun onCreateView(
@@ -66,7 +69,7 @@ class SaveTransactionsDialog : BottomSheetDialogFragment() {
 
     private fun saveAction(uri: Uri) {
         Toast.makeText(requireContext(), "Saving Transactions...", Toast.LENGTH_SHORT).show()
-        SpreadsheetController.writeSpreadsheet(requireContext(), uri)
+        SpreadsheetController.writeSpreadsheet(requireContext(), uri, transactionViewModel.listTransaction.value!!)
         this.dismiss()
     }
 
