@@ -49,13 +49,14 @@
             android:textSize="12sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLogin"
         android:layout_width="340dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:backgroundTint="#806D90"
         android:text="@string/login_button"
         app:cornerRadius="30dp"
+        style="@style/Widget.MaterialComponents.Button"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

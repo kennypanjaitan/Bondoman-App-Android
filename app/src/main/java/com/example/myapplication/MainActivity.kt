@@ -1,7 +1,9 @@
 // MainActivity.kt
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.myapplication.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.myapplication.retrofit.LoginResponse
 import com.example.myapplication.controllers.SnackbarController
 
 class MainActivity : AppCompatActivity() {
@@ -26,11 +29,31 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
         val navController = navHostFragment!!.findNavController()
 
+        // run service
+        startService(Intent(this, BackgroundService::class.java))
+
         // Check login status
+
         if (!isLoggedIn()) {
-            navController.navigate(R.id.loginActivity)
-            finish()
+            Log.d("TokenResponse", "notLoggedIn")
+
+            val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
+            var token = sharedPreferences.getString("token", null)
+
+            Log.d("TokenResponse", "token sebelum login : " + token)
+
+            val loginIntent = Intent(this, LoginActivity::class.java)
+            startActivity(loginIntent)
         }
+        else {
+            val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
+            val updatedToken = sharedPreferences.getString("token", null)
+
+            Log.d("TokenResponse", "token setelah login : " + updatedToken)
+
+            Log.d("TokenResponse", "isLoggedIn")
+        }
+
 
         // Set up Network Snack bar
         snackBarController = SnackbarController
@@ -48,7 +71,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isLoggedIn(): Boolean {
-        // Retrieve login status from SharedPreferences
         val sharedPreferences = getSharedPreferences("login_status", MODE_PRIVATE)
         return sharedPreferences.getBoolean("isLoggedIn", false)
     }

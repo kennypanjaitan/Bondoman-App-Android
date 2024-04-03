@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
 }
 
 android {
@@ -38,8 +39,12 @@ android {
     }
 }
 
+
 dependencies {
 
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
@@ -57,6 +62,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
     val camerax_version = "1.3.0"
     // The following line is optional, as the core library is included indirectly by camera-camera2
     implementation("androidx.camera:camera-core:${camerax_version}")
@@ -75,5 +82,15 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0") // Gson Converter
     // Add additional dependencies if needed (e.g., logging interceptor)
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0") // L
+    // location services
+    implementation ("com.google.android.gms:play-services-location:17.0.0")
+    //googlemap
+    implementation ("com.google.android.gms:play-services-maps:18.0.1")
 
+    // background service
+    implementation ("androidx.work:work-runtime:2.9.0")
+
+    implementation ("io.jsonwebtoken:jjwt-api:0.11.2")
+    implementation ("io.jsonwebtoken:jjwt-impl:0.11.2")
+    implementation ("io.jsonwebtoken:jjwt-jackson:0.11.2")
 }
