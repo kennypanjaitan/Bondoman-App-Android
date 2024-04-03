@@ -48,10 +48,6 @@ class StatisticsFragment : Fragment() {
         // TODO: Use the ViewModel
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-
     private fun createPieChart() {
         val list: ArrayList<PieEntry> = ArrayList()
 

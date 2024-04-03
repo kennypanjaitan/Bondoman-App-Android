@@ -7,16 +7,17 @@ import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.example.myapplication.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.myapplication.retrofit.LoginResponse
-
+import com.example.myapplication.controllers.SnackbarController
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
+    private lateinit var snackBarController: SnackbarController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,8 +44,6 @@ class MainActivity : AppCompatActivity() {
 
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
-
-
         }
         else {
             val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
@@ -55,6 +54,11 @@ class MainActivity : AppCompatActivity() {
             Log.d("TokenResponse", "isLoggedIn")
         }
 
+
+        // Set up Network Snack bar
+        snackBarController = SnackbarController
+        snackBarController.init(this)
+        snackBarController.observeStatus(binding.root, lifecycleScope)
 
         // Set up navigation
         val appBarConfiguration = AppBarConfiguration(
