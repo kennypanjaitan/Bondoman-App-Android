@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.dashboard.DashboardFragment">
+    tools:context=".ui.scan.Scan">
 
     <ImageView
         android:id="@+id/imagePreview"
@@ -23,7 +23,7 @@
         android:id="@+id/capturebtn"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="50dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="take a photo"
         android:scaleType="centerCrop"
@@ -36,7 +36,7 @@
         android:id="@+id/gallerybtn"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="50dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="flip camera"
         android:src="@drawable/baseline_image_24"
@@ -49,10 +49,10 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginStart="60dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="50dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:scaleType="centerCrop"
-        android:src="@drawable/baseline_repeat_24"
+        android:src="@drawable/baseline_autorenew_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -61,7 +61,7 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginEnd="60dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="50dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:scaleType="centerCrop"
         android:src="@drawable/baseline_check_24"

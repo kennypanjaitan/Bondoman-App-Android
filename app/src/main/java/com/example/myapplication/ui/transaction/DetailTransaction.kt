@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.myapplication.R
+import com.example.myapplication.adapter.LocationAdapter
 import com.example.myapplication.databinding.FragmentDetailTransactionBinding
 import com.example.myapplication.models.CategoryEnum
 import com.example.myapplication.room.TransactionDB
@@ -50,15 +51,12 @@ import kotlin.coroutines.suspendCoroutine
 class DetailTransaction: Fragment(), OnMapReadyCallback{
     private var _binding: FragmentDetailTransactionBinding? = null
     private val transactionViewModel: TransactionViewModel by viewModels { TransactionViewModelFactory(requireContext()) }
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var gMap: GoogleMap
     private val binding get() = _binding!!
     private var transactionID: Int = 0
     private lateinit var category: ArrayList<String>
     private lateinit var adapterItems: ArrayAdapter<String>
-    private var latitude: Double = 0.0
-    private var longitude: Double = 0.0
-    private var address: String = ""
+    private lateinit var locationAdapter : LocationAdapter
     private var categoryS: String = ""
 
     override fun onCreateView(
@@ -74,9 +72,8 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
         }
         _binding = FragmentDetailTransactionBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
         transactionID = arguments?.getInt("transactionID")!!
-
+        locationAdapter = LocationAdapter(requireContext(),requireActivity())
         binding.savebtn.setOnClickListener{
             saveTransaction()
         }
@@ -84,7 +81,7 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
             viewLocation()
         }
         binding.updateLoc.setOnClickListener {
-            updateLocation()
+            locationAdapter.getLocation()
         }
         binding.deletebtn.setOnClickListener {
             showDialog("Delete Transaction")
@@ -113,12 +110,12 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
         binding.inputTitle.setText(transaction.title)
         binding.inputNominal.setText(transaction.nominal.toString())
         binding.inputDate.setText(transaction.date)
-        latitude = transaction.latitude
-        longitude = transaction.longitude
-        val location = LatLng(latitude,longitude)
-        gMap.addMarker(MarkerOptions().position(location).title(address))
+        locationAdapter.setLatitude(transaction.latitude)
+        locationAdapter.setLongitude(transaction.longitude)
+        locationAdapter.setAddres(transaction.location)
+        val location = LatLng(transaction.latitude,transaction.longitude)
+        gMap.addMarker(MarkerOptions().position(location).title(locationAdapter.getAddress()))
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16F))
-        address = transaction.location
         category = ArrayList()
         category.add("Expense")
         category.add("Income")
@@ -138,56 +135,22 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
         }
     }
 
-    private fun updateLocation(){
-        if (ActivityCompat.checkSelfPermission(requireContext(),android.Manifest.permission.ACCESS_FINE_LOCATION )
-            != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(requireActivity(),
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),100
-            )
-        }
-        val location = fusedLocationProviderClient.lastLocation
-        location.addOnSuccessListener {
-            if (it!=null){
-                Log.d("bewe", "masuk")
-                val temp = it.latitude
-                latitude = temp
-                longitude = it.longitude
-
-                val geocoder = Geocoder(requireContext(), Locale.getDefault())
-                try {
-                    val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
-                    val obj: Address = addresses!![0]
-                    address = obj.locality
-                    val location = LatLng(latitude,longitude)
-                    gMap.resetMinMaxZoomPreference()
-                    gMap.addMarker(MarkerOptions().position(location).title(address))
-                    gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16F))
-                } catch (e: IOException) {
-                    Toast.makeText(requireContext(), "Failed to get location", Toast.LENGTH_SHORT).show()
-                    e.printStackTrace()
-                }
-            }
-        }
-    }
-
     private fun viewLocation(){
-        val geoUri = "http://maps.google.com/maps?q=loc:$latitude,$longitude Location Transaction"
+        val geoUri = "http://maps.google.com/maps?q=loc:${locationAdapter.getLatitude()},${locationAdapter.getLongitude()} Location Transaction"
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(geoUri))
         requireContext().startActivity(intent)
     }
 
     private fun saveTransaction(){
         val title = binding.inputTitle.text.toString()
-        val nominal = binding.inputNominal.text.toString().toInt()
+        val nominal = binding.inputNominal.text.toString().toDouble()
         val date = binding.inputDate.text.toString()
         if (inputValidated(title, nominal, categoryS, date)){
             var type = CategoryEnum.EXPENSE
             if (categoryS == "Income") {
                 type = CategoryEnum.INCOME
             }
-            transactionViewModel.updateTransaction(TransactionEntity(transactionID, title, date, address, latitude, longitude, nominal, type))
+            transactionViewModel.updateTransaction(TransactionEntity(transactionID, title, date, locationAdapter.getAddress(), locationAdapter.getLatitude(), locationAdapter.getLongitude(), nominal, type))
             val navController = findNavController()
             navController.navigate(R.id.navigation_transactions)
         }
@@ -214,8 +177,8 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
         dialog.show()
     }
 
-    private fun inputValidated(title: String, nominal: Int, category: String, date: String): Boolean{
-        return title.isNotEmpty() && nominal != 0 && category.isNotEmpty() && date.isNotEmpty()
+    private fun inputValidated(title: String, nominal: Double, category: String, date: String): Boolean{
+        return title.isNotEmpty() && nominal != 0.0 && category.isNotEmpty() && date.isNotEmpty()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

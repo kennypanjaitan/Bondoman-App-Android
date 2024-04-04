@@ -1,72 +1,65 @@
-package com.example.myapplication.ui.dashboard
+package com.example.myapplication.ui.scan
 
 import android.Manifest
 import android.app.Activity.MODE_PRIVATE
 import android.app.Activity.RESULT_OK
 import android.content.ContentValues.TAG
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.os.Build
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.OrientationEventListener
-import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
-import androidx.camera.view.LifecycleCameraController
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.CameraController
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
-import com.example.myapplication.databinding.FragmentDashboardBinding
-import com.example.myapplication.utils.appSettingOpen
-import com.example.myapplication.utils.warningPermissionDialog
+import androidx.navigation.fragment.findNavController
+import com.example.myapplication.R
+import com.example.myapplication.adapter.LocationAdapter
+import com.example.myapplication.databinding.FragmentScanBinding
+import com.example.myapplication.models.CategoryEnum
+import com.example.myapplication.room.TransactionEntity
+import com.example.myapplication.ui.transaction.TransactionViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import android.content.Context
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
+import java.util.Date
 
-class DashboardFragment : Fragment() {
+class Scan : Fragment() {
 
-    private var _binding: FragmentDashboardBinding? = null
-    private lateinit var capture: ImageButton;
-    private lateinit var flipCamera: ImageButton;
-    private val multiplePermissionId = 14
-    private val multiplePermissionNameList =
-        arrayListOf(
-            android.Manifest.permission.CAMERA,
-        )
+    private var _binding: FragmentScanBinding? = null
+
+    private lateinit var locationAdapter: LocationAdapter
     private lateinit var imageCapture: ImageCapture
-    private lateinit var cameraProvider: ProcessCameraProvider
-    private lateinit var camera: Camera
-    private lateinit var cameraSelector: CameraSelector
-    private var orientationEventListener: OrientationEventListener? = null
-    private var lensFacing = CameraSelector.LENS_FACING_BACK
     private lateinit var cameraExecutor: ExecutorService
-
     private lateinit var bitmap: Bitmap
+
+    private val scanViewModel: ScanViewModel by activityViewModels {
+        ScanViewModelFactory(requireContext())
+    }
 
 
     private val binding get() = _binding!!
@@ -76,16 +69,14 @@ class DashboardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val dashboardViewModel =
-            ViewModelProvider(this).get(DashboardViewModel::class.java)
-
-        _binding = FragmentDashboardBinding.inflate(inflater, container, false)
+        _binding = FragmentScanBinding.inflate(inflater, container, false)
         val root: View = binding.root
         if (!hasRequiredPermissions()) {
             ActivityCompat.requestPermissions(
                 requireActivity(), CAMERAX_PERMISSIONS, 0
             )
         }
+        locationAdapter = LocationAdapter(requireContext(),requireActivity())
         displayCamera()
         if (hasRequiredPermissions()) {
             startCamera()
@@ -108,6 +99,8 @@ class DashboardFragment : Fragment() {
         return root
     }
 
+
+
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -120,6 +113,7 @@ class DashboardFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 100 && resultCode == RESULT_OK){
             binding.imagePreview.setImageURI(data?.data)
+            locationAdapter.getLocation()
             displayPhoto()
         }
     }
@@ -176,6 +170,7 @@ class DashboardFragment : Fragment() {
                         bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
                     }
                     binding.imagePreview.setImageBitmap(bitmap)
+                    locationAdapter.getLocation()
                     displayPhoto()
                 }
             }
@@ -205,17 +200,37 @@ class DashboardFragment : Fragment() {
         client.newCall(request).enqueue(object : okhttp3.Callback{
             override fun onFailure(call: Call, e: IOException) {
                 Log.d("Service Error", e.toString())
+
             }
 
             override fun onResponse(call: Call, response: Response) {
                 if(response.isSuccessful){
                     val jsonResponse = JSONObject(response.body!!.string())
+                    val itemsObject = jsonResponse.getJSONObject("items")
+                    val itemsArray = itemsObject.getJSONArray("items")
+                    val sdf = SimpleDateFormat("dd/M/yyyy hh:mm")
+                    val currentDate = sdf.format(Date())
+                    for (i in 0 until  itemsArray.length()){
+                        val item = itemsArray.getJSONObject(i)
+                        val title = item.getString("name")
+                        val price = item.getDouble("price") * item.getInt("qty")
+                        val category = CategoryEnum.EXPENSE
+                        val address = locationAdapter.getAddress()
+                        val latitude = locationAdapter.getLatitude()
+                        val longitude = locationAdapter.getLongitude()
+                        val transaction = TransactionEntity(0, title, currentDate, address, latitude, longitude, price, category)
+                        scanViewModel.scanTransaction(transaction)
+                    }
 
+
+
+//
                     Log.d("asd", jsonResponse.toString())
                 }
             }
 
         })
+        findNavController().navigate(R.id.navigation_scan_confirmation)
 
     }
 
