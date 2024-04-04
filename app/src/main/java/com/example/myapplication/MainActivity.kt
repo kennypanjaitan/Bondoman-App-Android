@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.myapplication.retrofit.LoginResponse
 import com.example.myapplication.controllers.SnackbarController
 
 class MainActivity : AppCompatActivity() {
@@ -30,26 +29,25 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment!!.findNavController()
 
         // run service
-        startService(Intent(this, BackgroundService::class.java))
+        startService(Intent(applicationContext, BackgroundService::class.java))
 
         // Check login status
-
         if (!isLoggedIn()) {
             Log.d("TokenResponse", "notLoggedIn")
 
             val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
-            var token = sharedPreferences.getString("token", null)
+            val token = sharedPreferences.getString("token", null)
 
-            Log.d("TokenResponse", "token sebelum login : " + token)
+            Log.d("TokenResponse", "token sebelum login : $token")
 
-            val loginIntent = Intent(this, LoginActivity::class.java)
+            val loginIntent = Intent(applicationContext, LoginActivity::class.java)
             startActivity(loginIntent)
         }
         else {
             val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
             val updatedToken = sharedPreferences.getString("token", null)
 
-            Log.d("TokenResponse", "token setelah login : " + updatedToken)
+            Log.d("TokenResponse", "token setelah login : $updatedToken")
 
             Log.d("TokenResponse", "isLoggedIn")
         }
@@ -57,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set up Network Snack bar
         snackBarController = SnackbarController
-        snackBarController.init(this)
+        snackBarController.init(applicationContext)
         snackBarController.observeStatus(binding.root, lifecycleScope)
 
         // Set up navigation

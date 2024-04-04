@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
-import com.example.myapplication.TransactionAdapter
+import com.example.myapplication.adapter.TransactionAdapter
 import com.example.myapplication.databinding.FragmentTransactionBinding
 import com.example.myapplication.room.TransactionEntity
 import androidx.lifecycle.Observer
@@ -72,9 +72,9 @@ class TransactionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //observe live data
-        transactionViewModel.listTransaction.observe(viewLifecycleOwner, Observer { transactions ->
+        transactionViewModel.listTransaction.observe(viewLifecycleOwner) { transactions ->
             transactionAdapter.setData(transactions)
-        })
+        }
 
         //fetch data
         transactionViewModel.getAllData()

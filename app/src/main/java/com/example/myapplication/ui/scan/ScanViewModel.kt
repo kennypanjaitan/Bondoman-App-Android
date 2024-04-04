@@ -1,10 +1,10 @@
-package com.example.myapplication.ui.dashboard
+package com.example.myapplication.ui.scan
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class DashboardViewModel : ViewModel() {
+class ScanViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is Scanner Fragment"

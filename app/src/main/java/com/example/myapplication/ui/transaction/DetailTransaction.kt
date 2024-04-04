@@ -132,9 +132,9 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
                 categoryS = adapterView.getItemAtPosition(i).toString()
         }
         if (transaction.category.toString() == "EXPENSE") {
-            autoCompleted.setText("Expense")
+            autoCompleted.setText(R.string.filter_expense)
         } else if (transaction.category.toString() == "INCOME"){
-            autoCompleted.setText("Income")
+            autoCompleted.setText(R.string.filter_income)
         }
     }
 
@@ -227,5 +227,10 @@ class DetailTransaction: Fragment(), OnMapReadyCallback{
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

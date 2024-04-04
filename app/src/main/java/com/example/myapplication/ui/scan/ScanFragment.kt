@@ -1,46 +1,36 @@
-package com.example.myapplication.ui.dashboard
+package com.example.myapplication.ui.scan
 
 import android.Manifest
 import android.app.Activity.MODE_PRIVATE
 import android.app.Activity.RESULT_OK
 import android.content.ContentValues.TAG
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.OrientationEventListener
-import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
-import androidx.camera.view.LifecycleCameraController
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.CameraController
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.FragmentDashboardBinding
-import com.example.myapplication.utils.appSettingOpen
-import com.example.myapplication.utils.warningPermissionDialog
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import android.content.Context
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -48,15 +38,15 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-class DashboardFragment : Fragment() {
+class ScanFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
-    private lateinit var capture: ImageButton;
-    private lateinit var flipCamera: ImageButton;
+    private lateinit var capture: ImageButton
+    private lateinit var flipCamera: ImageButton
     private val multiplePermissionId = 14
     private val multiplePermissionNameList =
         arrayListOf(
-            android.Manifest.permission.CAMERA,
+            Manifest.permission.CAMERA,
         )
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraProvider: ProcessCameraProvider
@@ -76,8 +66,8 @@ class DashboardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val dashboardViewModel =
-            ViewModelProvider(this).get(DashboardViewModel::class.java)
+        val scanViewModel =
+            ViewModelProvider(this).get(ScanViewModel::class.java)
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -198,7 +188,7 @@ class DashboardFragment : Fragment() {
         val request = Request.Builder()
             .url(url)
             .post(body)
-            .addHeader("Authorization", "Bearer ${token}")
+            .addHeader("Authorization", "Bearer $token")
 //            .addHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuaW0iOiIxMzUyMTAwMSIsImlhdCI6MTcxMTk4NTUwOSwiZXhwIjoxNzExOTg1ODA5fQ.g0gH2VM6E361jLjdkyfINN1d3yh2HG9z_js0LuShuf0")
             .build()
 

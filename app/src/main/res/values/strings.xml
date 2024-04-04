@@ -2,7 +2,6 @@
     <!-- Title -->
     <string name="app_name">BondoMan</string>
     <string name="title_login">Login</string>
-    <string name="title_home">Home</string>
     <string name="title_transactions">Transactions</string>
     <string name="title_scan">Scan</string>
     <string name="title_statistics">Statistics</string>
@@ -29,6 +28,23 @@
     <string name="text_xls">.xls</string>
     <string name="text_save">Save</string>
     <string name="text_save_dialog">Select file format to save transactions</string>
-    <string name="title">Title</string>
-    <string name="transID">ID</string>
+
+    <!-- Description -->
+    <string name="desc_imagePreview">Your Image Preview</string>
+    <string name="desc_retake">Retake Photo</string>
+    <string name="desc_upload">upload photo</string>
+    <string name="desc_icLocation">location icon</string>
+    <string name="desc_takePhoto">take a photo</string>
+    <string name="desc_flipCamera">flip camera</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_nominal">Nominal</string>
+    <string name="hint_date">Date</string>
+    <string name="hint_selectCategory">Select a Category</string>
+    <string name="hint_viewLocation">View Location</string>
+    <string name="hint_updateLocation">Update Location</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_add">Add</string>
+
+    <!-- Hint -->
 </resources>

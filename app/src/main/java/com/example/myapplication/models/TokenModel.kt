@@ -1,3 +1,3 @@
-package com.example.myapplication.model
+package com.example.myapplication.models
 
 data class TokenModel(val token : String?)

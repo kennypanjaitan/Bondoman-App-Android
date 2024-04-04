@@ -44,8 +44,13 @@ class StatisticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(StatisticsViewModel::class.java)
+        viewModel = ViewModelProvider(this)[StatisticsViewModel::class.java]
         // TODO: Use the ViewModel
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
     private fun createPieChart() {

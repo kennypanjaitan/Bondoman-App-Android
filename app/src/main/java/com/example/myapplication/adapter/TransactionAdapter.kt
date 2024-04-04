@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.adapter
 
 
 import android.annotation.SuppressLint
@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.R
 import com.example.myapplication.models.CategoryEnum
 import com.example.myapplication.room.TransactionEntity
 

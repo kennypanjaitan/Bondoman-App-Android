@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="116dp">
 
@@ -42,7 +41,8 @@
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/transactionDate"
-            app:srcCompat="@drawable/baseline_location_on_24" />
+            app:srcCompat="@drawable/baseline_location_on_24"
+            android:contentDescription="@string/desc_icLocation" />
 
         <TextView
             android:id="@+id/transactionTitle"

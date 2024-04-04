@@ -11,13 +11,11 @@ import com.google.android.gms.location.LocationServices
 import java.io.IOException
 import java.util.Locale
 
-class LocationAdapter(context: Context, activity: Activity) {
+class LocationAdapter(private var context: Context, private var activity: Activity) {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private var address: String = ""
-    private var context: Context = context
-    private var activity: Activity = activity
 
     fun getLocation(){
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
