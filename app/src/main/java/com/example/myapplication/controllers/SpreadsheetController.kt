@@ -3,6 +3,8 @@ package com.example.myapplication.controllers
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
+import com.example.myapplication.models.CategoryEnum
+import com.example.myapplication.room.TransactionEntity
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.HorizontalAlignment
 import org.apache.poi.ss.usermodel.IndexedColors
@@ -15,29 +17,53 @@ import java.io.FileOutputStream
 object SpreadsheetController {
     private lateinit var workBook: XSSFWorkbook
     private lateinit var headerStyle: XSSFCellStyle
+    private lateinit var dataStyle: XSSFCellStyle
     private lateinit var sheet: XSSFSheet
 
-    fun writeSpreadsheet(context: Context, uri: Uri) {
+    fun writeSpreadsheet(context: Context, uri: Uri, data: List<TransactionEntity>) {
         workBook = XSSFWorkbook()
         sheet = workBook.createSheet("Transactions")
-        setHeaderStyle()
+        setStyle()
         createHeaderRow()
+        fillDataIntoSheet(data)
         writeDataToStream(context, uri)
     }
 
-    private fun setHeaderStyle() {
+    private fun setStyle() {
         headerStyle = workBook.createCellStyle()
+        dataStyle = workBook.createCellStyle()
+
         headerStyle.apply {
-            fillForegroundColor = IndexedColors.AQUA.getIndex()
+            fillForegroundColor = IndexedColors.AQUA.index
             fillPattern = FillPatternType.SOLID_FOREGROUND
             alignment = HorizontalAlignment.CENTER
             verticalAlignment = VerticalAlignment.CENTER
         }
+        dataStyle.apply {
+            alignment = HorizontalAlignment.CENTER
+            verticalAlignment = VerticalAlignment.CENTER
+            shrinkToFit = true
+        }
+    }
+
+    private fun setDataStyle(categoryEnum: CategoryEnum): XSSFCellStyle {
+        val style = workBook.createCellStyle()
+        style.apply {
+            alignment = HorizontalAlignment.CENTER
+            verticalAlignment = VerticalAlignment.CENTER
+            shrinkToFit = true
+            fillForegroundColor = when (categoryEnum) {
+                CategoryEnum.INCOME -> IndexedColors.LIGHT_GREEN.index
+                CategoryEnum.EXPENSE -> IndexedColors.RED.index
+            }
+            fillPattern = FillPatternType.SOLID_FOREGROUND
+        }
+        return style
     }
 
     private fun createHeaderRow() {
         val headerRow = sheet.createRow(0)
-        val headers = arrayOf("Tanggal", "Kategori", "Nama", "Nominal", "Lokasi")
+        val headers = arrayOf("ID", "Tanggal", "Kategori", "Nama", "Nominal", "Lokasi")
         headers.forEachIndexed { index, header ->
             headerRow.createCell(index).apply {
                 setCellValue(header)
@@ -46,21 +72,37 @@ object SpreadsheetController {
         }
     }
 
-    /**
-     * TODO:
-     * 1. Refactor Transaction package name (models)
-     * 2. Make tostring method in Transaction
-     */
-//    private fun fillDataIntoSheet(transactionList: List<Transaction>) {
-//        for ((index, transaction) in transactionList.withIndex()) {
-//            val row = sheet.createRow(index + 1)
-//            row.createCell(0).setCellValue(transaction.date)
-////            row.createCell(1).setCellValue(transaction.category)
-//            row.createCell(2).setCellValue(transaction.title)
-//            row.createCell(3).setCellValue(transaction.nominal.toDouble())
-//            row.createCell(4).setCellValue(transaction.loc)
-//        }
-//    }
+    private fun fillDataIntoSheet(transactionList: List<TransactionEntity>) {
+        if (transactionList.isEmpty()) return
+        for ((index, transaction) in transactionList.withIndex()) {
+            val dataRow = sheet.createRow(index + 1)
+            val coloredStyle = setDataStyle(transaction.category)
+            dataRow.createCell(0).apply {
+                setCellValue(transaction.id.toString())
+                cellStyle = dataStyle
+            }
+            dataRow.createCell(1).apply {
+                setCellValue(transaction.date)
+                cellStyle = dataStyle
+            }
+            dataRow.createCell(2).apply {
+                setCellValue(transaction.category.toString())
+                cellStyle = coloredStyle
+            }
+            dataRow.createCell(3).apply {
+                setCellValue(transaction.title)
+                cellStyle = dataStyle
+            }
+            dataRow.createCell(4).apply {
+                setCellValue(transaction.nominal.toDouble())
+                cellStyle = coloredStyle
+            }
+            dataRow.createCell(5).apply {
+                setCellValue(transaction.location)
+                cellStyle = dataStyle
+            }
+        }
+    }
 
     private fun writeDataToStream(context: Context, uri: Uri): Boolean {
         var isWritten = false

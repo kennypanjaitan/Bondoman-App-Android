@@ -1,26 +1,30 @@
 package com.example.myapplication.ui.saveTransactions
 
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.DocumentsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import com.example.myapplication.R
+import com.example.myapplication.controllers.DialogController
+import com.example.myapplication.controllers.FileController
 import com.example.myapplication.controllers.SpreadsheetController
 import com.example.myapplication.databinding.FragmentSaveTransactionsDialogBinding
 import com.example.myapplication.models.FileFormat
+import com.example.myapplication.ui.transaction.TransactionViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
 class SaveTransactionsDialog : BottomSheetDialogFragment() {
     private var _binding: FragmentSaveTransactionsDialogBinding? = null
     private val binding get() = _binding!!
-    private val CREATE_FILE = 1
-    private lateinit var saveExtension: FileFormat
+    private val _createFileCode = 1
+    private val transactionViewModel: TransactionViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,32 +36,30 @@ class SaveTransactionsDialog : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentSaveTransactionsDialogBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
+        var clicked = false
         binding.apply {
             saveRadioGroup.setOnCheckedChangeListener { _, checkedId ->
                 when (checkedId) {
-                    R.id.save_xls -> saveExtension = FileFormat.XLS
-                    R.id.save_xlsx -> saveExtension = FileFormat.XLSX
+                    R.id.save_xls -> FileController.setFileFormat(FileFormat.XLS)
+                    R.id.save_xlsx -> FileController.setFileFormat(FileFormat.XLSX)
+                }
+                clicked = true
+            }
+            saveButton.setOnClickListener {
+                if (clicked) {
+                    startActivityForResult(FileController.createFileIntent(), _createFileCode)
+                } else {
+                    Toast.makeText(requireContext(), "Please select file format", Toast.LENGTH_SHORT).show()
                 }
             }
-            saveButton.setOnClickListener { createFile() }
         }
-    }
-
-    private fun createFile() {
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = saveExtension.mimeType
-            putExtra(Intent.EXTRA_TITLE, "TransactionsBondoMan.${saveExtension.extString}")
-            putExtra(DocumentsContract.EXTRA_INITIAL_URI,
-                Uri.parse("content://com.android.externalstorage.documents/document/primary:Documents"))
-        }
-        startActivityForResult(intent, CREATE_FILE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == RESULT_OK) {
             when (requestCode) {
-                CREATE_FILE -> data?.data?.also { uri ->
+                _createFileCode -> data?.data?.also { uri ->
+                    FileController.setUri(uri)
                     saveAction(uri)
                 }
             }
@@ -65,10 +67,21 @@ class SaveTransactionsDialog : BottomSheetDialogFragment() {
     }
 
     private fun saveAction(uri: Uri) {
-        Toast.makeText(requireContext(), "Saving Transactions...", Toast.LENGTH_SHORT).show()
-        SpreadsheetController.writeSpreadsheet(requireContext(), uri)
-        this.dismiss()
+        val context = requireContext()
+        Toast.makeText(context, "Saving Transactions...", Toast.LENGTH_SHORT).show()
+        SpreadsheetController.writeSpreadsheet(requireContext(), uri, transactionViewModel.listTransaction.value!!)
+        sendEmail(context, uri)
     }
 
-
+    private fun sendEmail(context: Context, uri: Uri) {
+        DialogController.showDialogConfirmation(
+            context,
+            "Send Transactions Data via Email",
+            "Do you want to send the transactions data via email?",
+            "Yes",
+            "No",
+            { FileController.sendFileIntentViaEmail(context, uri) },
+            { this.dismiss() }
+        )
+    }
 }
