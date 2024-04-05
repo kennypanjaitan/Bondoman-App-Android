@@ -5,11 +5,16 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.example.myapplication.models.CategoryEnum
 
 @Dao
 interface TransactionDAO {
     @Query("SELECT * FROM `transaction`")
     suspend fun getAllTransactions(): List<TransactionEntity>
+
+    @Query("SELECT * FROM `transaction` WHERE category = :category")
+    suspend fun getTypedTransaction(category: CategoryEnum): List<TransactionEntity>
+
 
     @Query("SELECT * FROM `transaction` WHERE id = :transactionID")
     suspend fun getTransaction(transactionID: Int): List<TransactionEntity>

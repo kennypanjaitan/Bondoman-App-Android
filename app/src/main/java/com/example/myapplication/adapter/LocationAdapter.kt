@@ -61,4 +61,15 @@ class LocationAdapter(context: Context, activity: Activity) {
         return address
     }
 
+    fun setLatitude(point: Double) {
+        latitude = point
+    }
+    fun setLongitude(point: Double) {
+        longitude = point
+    }
+
+    fun setAddres(place: String) {
+        address = place
+    }
+
 }

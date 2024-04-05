@@ -36,12 +36,8 @@ class MainActivity : AppCompatActivity() {
         // Check login status
 
         if (!isLoggedIn()) {
-            Log.d("TokenResponse", "notLoggedIn")
-
             val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
             val token = sharedPreferences.getString("token", null)
-
-            Log.d("TokenResponse", "token sebelum login : $token")
 
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
@@ -49,10 +45,6 @@ class MainActivity : AppCompatActivity() {
         else {
             val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
             val updatedToken = sharedPreferences.getString("token", null)
-
-            Log.d("TokenResponse", "token setelah login : $updatedToken")
-
-            Log.d("TokenResponse", "isLoggedIn")
         }
 
 

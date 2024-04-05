@@ -79,7 +79,7 @@ class FormTransaction: Fragment() {
         val title = binding.inputTitle.text.toString()
         val sdf = SimpleDateFormat("dd/M/yyyy hh:mm")
         val currentDate = sdf.format(Date())
-        val nominal = binding.inputNominal.text.toString().toInt()
+        val nominal = binding.inputNominal.text.toString().toDouble()
         val address = locationAdapter.getAddress()
         val latitude = locationAdapter.getLatitude()
         val longitude = locationAdapter.getLongitude()
@@ -98,8 +98,8 @@ class FormTransaction: Fragment() {
 
 
 
-    private fun inputValidated(title: String, nominal: Int, category: String): Boolean{
-        return title.isNotEmpty() && nominal != 0 && category.isNotEmpty()
+    private fun inputValidated(title: String, nominal: Double, category: String): Boolean{
+        return title.isNotEmpty() && nominal != 0.0 && category.isNotEmpty()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.models.CategoryEnum
 import com.example.myapplication.room.TransactionDB
 import com.example.myapplication.room.TransactionEntity
 import kotlinx.coroutines.CoroutineScope
@@ -24,6 +25,20 @@ class TransactionViewModel(private val context: Context) : ViewModel() {
     fun getAllData(){
         viewModelScope.launch {
             val response = transactionDB.transactionDao().getAllTransactions()
+            _listTransaction.apply { value = response }
+        }
+    }
+
+    fun getIncomeData(){
+        viewModelScope.launch {
+            val response = transactionDB.transactionDao().getTypedTransaction(CategoryEnum.INCOME)
+            _listTransaction.apply { value = response }
+        }
+    }
+
+    fun getExpenseData(){
+        viewModelScope.launch {
+            val response = transactionDB.transactionDao().getTypedTransaction(CategoryEnum.EXPENSE)
             _listTransaction.apply { value = response }
         }
     }

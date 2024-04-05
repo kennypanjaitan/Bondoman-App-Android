@@ -27,7 +27,7 @@ data class TransactionEntity(
     val longitude: Double,
 
     @ColumnInfo(name = "nominal")
-    val nominal: Int,
+    val nominal: Double,
 
     @ColumnInfo(name = "category")
     val category: CategoryEnum

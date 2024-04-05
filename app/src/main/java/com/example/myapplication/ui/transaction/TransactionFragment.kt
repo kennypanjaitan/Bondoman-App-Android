@@ -41,16 +41,19 @@ class TransactionFragment : Fragment() {
             allBtn.setBackgroundResource(R.drawable.textlineactive)
             expensesBtn.setBackgroundResource(R.drawable.textlines)
             incomeBtn.setBackgroundResource(R.drawable.textlines)
+            transactionViewModel.getAllData()
         }
         expensesBtn.setOnClickListener {
             allBtn.setBackgroundResource(R.drawable.textlines)
             expensesBtn.setBackgroundResource(R.drawable.textlineactive)
             incomeBtn.setBackgroundResource(R.drawable.textlines)
+            transactionViewModel.getExpenseData()
         }
         incomeBtn.setOnClickListener {
             allBtn.setBackgroundResource(R.drawable.textlines)
             expensesBtn.setBackgroundResource(R.drawable.textlines)
             incomeBtn.setBackgroundResource(R.drawable.textlineactive)
+            transactionViewModel.getIncomeData()
         }
         binding.addbutton.setOnClickListener{
             val navController = findNavController()
