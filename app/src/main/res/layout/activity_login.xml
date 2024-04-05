@@ -53,7 +53,7 @@
         android:id="@+id/buttonLogin"
         android:layout_width="340dp"
         android:layout_height="50dp"
-        android:backgroundTint="#806D90"
+        android:backgroundTint="@color/purple_200"
         android:text="@string/login_button"
         app:cornerRadius="30dp"
         style="@style/Widget.MaterialComponents.Button"
