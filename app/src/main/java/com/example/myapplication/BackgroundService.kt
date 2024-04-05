@@ -35,9 +35,7 @@ class BackgroundService : Service() {
 
                         val currentTimeSeconds = System.currentTimeMillis() / 1000
 
-                        Log.d("TokenResponse", "${currentTimeSeconds}  ${expiredTime}")
                         if(currentTimeSeconds > expiredTime){
-                                Log.d("TokenResponse", "sudah saatnya")
                                 val logOutPreferences = getSharedPreferences("login_status", MODE_PRIVATE)
                                 val editor = logOutPreferences.edit()
                                 editor.putBoolean("isLoggedIn", false)
@@ -55,11 +53,10 @@ class BackgroundService : Service() {
 
                         }
                         else {
-                                Log.d("TokenResponse", "masih belom bang")
+
                         }
 
 
-//                        Log.d("TokenResponse", "Background Service berjalan... token = $token")
                         handler?.postDelayed(this, delay)
                 }
         }

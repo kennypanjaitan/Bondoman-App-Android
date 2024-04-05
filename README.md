@@ -1,23 +1,56 @@
-# JMD
+# Tugas Besar 1 IF3210 Platform-Based Development
 
-## Project setup
-1. __Clone__ Repo
-2. Use __android studio__ to open the project
-3. __Checkout__ to branch `dev` and pull the latest changes
-4. Create new branch for your feature from `dev`
-## Branching and Commit Message
-Setiap membuat branch baru harus __ambil basenya__ dari branch `dev` { _atau branch yang berkaitan dengan fitur yang dikerjakan_ }.
+## Deskripsi Aplikasi
+Bondoman adalah aplikasi berbasis android untuk mencatat laporan keuangan dengan beberapa fitur berikut:
 
-Format branch: `<type>/<title>`. Contoh: `feat/navbar`.\
-Format commit message: `<type>: <message>`. Contoh: `feat: add navbar`, `fix: navbar not showing`.
+- Login untuk masuk ke dalam akun
+- Add Transactions : Menambahkan transaksi yang akan dicatat nantinya, terdapat 2 kategori yaitu pemasukan dan pengeluaran
+- Scan Bills : Fitur untuk scan suatu bill transaksi dan secara otomatis akan membuat transaksi baru
+- Transaction Graph : Fitur yang akan menampilkan graf lingkaran yg berisi perbandingan dari pemasukan dan pengeluaran
+- Save Transactions : Menyimpan riwayat transaksi dalam bentuk .xls atau .xlsx
+- Send Transactions : Mengirim riwayat transaksi ke email
+- Randomize Transactions : Fitur untuk membuat transaksi random
 
-__type:__
-- `feat` : untuk fitur baru
-- `fix` : untuk perbaikan bug
-- `docs` : untuk perubahan pada dokumentasi
-- `style` : untuk perubahan pada style (_missing semi colons, etc; no production code change_)
-- `refactor` : untuk perubahan pada kode yang tidak memperbaiki bug dan menambah fitur (_renaming a variable_)
-- `test` : untuk menambahkan test
-- `chore` : untuk perubahan pada build process atau tools dan library pendukung lainnya
+## Library yang digunakan
+Room untuk local database sqlite
+MpandroidChart untuk pemodelan chart
+Google play service location untuk menggunakan layanan lokasi
+Google play service maps untuk mengintegrasikan peta Google pada Android
+Retrofit untuk pemanggilan jaringan HTTP pada Android
+OkHttp Logging Interceptor merupakan interceptor untuk logging di OkHttp yang digunakan Retrofit
+JJWT untuk pengimplementasian JSON Web Tokens (JWT) pada Kotlin
+CameraX untuk dapat menggunakan kamera
+dan untuk seterusnya detail mengenai semua library yang dipakai dapat dilihat pada file build.gradle
 
-[Read here for Semantic Commit](https://nitayneeman.com/posts/understanding-semantic-commit-messages-using-git-and-angular/#perf)
+## Pembagian Kerja
+- 13521001 - Angger Ilham Amanullah 
+  - Pembuatan database
+  - Pembuatan penembakan endpoint
+  - Pembuatan Graph
+
+- 13521005 - Kelvin Rayhan Alkarim
+  - Pembuatan kamera
+  - Pembuatan transaksi
+  - Pembuatan Frontend
+  - Refactor Program
+
+- 13521023 - Kenny Benaya Natan
+  - Pembuatan navbar
+  - Pembuatan desain UI/UX
+  - Pembuatan settings
+  - Refactor program
+
+## Total Jam Persiapan dan Pengerjaan
+Untuk setiap anggota perkiraan rata rata total jam persiapan dan pengerjaan adalah 40 jam dimulai dari tugas besar ini release
+
+## ScreenShot Aplikasi
+![alternative_text](./screenshot/1.jpg)
+![alternative_text](./screenshot/2.jpg)
+![alternative_text](./screenshot/3.jpg)
+![alternative_text](./screenshot/4.jpg)
+![alternative_text](./screenshot/5.jpg)
+![alternative_text](./screenshot/6.jpg)
+![alternative_text](./screenshot/7.jpg)
+![alternative_text](./screenshot/8.jpg)
+![alternative_text](./screenshot/9.jpg)
+![alternative_text](./screenshot/10.jpg)

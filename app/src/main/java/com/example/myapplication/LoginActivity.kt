@@ -1,4 +1,3 @@
-// LoginActivity.kt
 package com.example.myapplication
 
 import android.app.Activity
@@ -33,10 +32,10 @@ class LoginActivity : AppCompatActivity() {
         val buttonLogin = findViewById<Button>(R.id.buttonLogin)
 
         buttonLogin.setOnClickListener {
-//            val email = editTextEmail.text.toString()
-//            val password = editTextPassword.text.toString()
-            val email = "13521001@std.stei.itb.ac.id"
-            val password = "password_13521001"
+            val email = editTextEmail.text.toString()
+            val password = editTextPassword.text.toString()
+//            val email = "13521001@std.stei.itb.ac.id"
+//            val password = "password_13521001"
             val loginModel = LoginModel(email,password)
 
             ApiService.apiService.login(loginModel)
@@ -48,21 +47,11 @@ class LoginActivity : AppCompatActivity() {
                         if(response.isSuccessful){
                             val status = response.code()
                             val token = response.body()?.token
-                            printLog(
-                                "status : " + status +
-                                        "token : " + response.body()?.token
-                            )
+
                             val sharedPreferences = getSharedPreferences("token", Context.MODE_PRIVATE)
                             sharedPreferences.edit().putString("token",
                                 response.body()?.token.toString()
                             ).apply()
-
-
-
-//                            setLoggedIn()
-//                            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
-//                            val navController = navHostFragment!!.findNavController()
-//                            navController.navigate(R.id.container)
 
 //                            send token to get expired date
                             val client = OkHttpClient()
@@ -77,60 +66,41 @@ class LoginActivity : AppCompatActivity() {
 
                             client.newCall(request).enqueue(object : okhttp3.Callback {
                                 override fun onFailure(call: okhttp3.Call, e: IOException){
-                                    Log.d("Service Error", e.toString())
                                 }
 
                                 override fun onResponse(call: okhttp3.Call, responseExp: okhttp3.Response) {
-//                                    Log.d("TokenResponse", "responsecode : ${responseExp.code}")
-//                                    Log.d("TokenResponse", responseExp.body!!.string())
                                     if(responseExp.isSuccessful){
                                         val jsonResponse = JSONObject(responseExp.body!!.string())
                                         val expVal = jsonResponse.getLong("exp")
 
-                                        Log.d("TokenResponse", "expVal : " + expVal)
 
                                         val expTimePreferences = getSharedPreferences("expiredTokenDate", MODE_PRIVATE)
                                         val editor = expTimePreferences.edit()
-                                        editor.putLong("expTime", expVal - 280)
+                                        editor.putLong("expTime", expVal)
                                         editor.apply()
 
-                                        Log.d("TokenResponse", "exptimereferences : " +
-                                            expTimePreferences.getLong("expTime", 0).toString()
-                                        )
-
                                         setLoggedIn()
-
                                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
 
                                         finish()
-//                                                val responseData = response.body!!.string()
-//                                                Log.d("TokenResponse", "responseService : $responseData")
                                     }
                                     else{
-//                                                Log.d("TokenResponse", "masuk onresponse tapi gak bisa apa2")
-
+                                        // .....
                                     }
                                 }
                             })
                         }
                         else{
-                            if(response.code() == 401){
-
-                            }
                             // .....
                         }
                     }
 
                     override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                        printLog(t.toString())
                     }
 
                 })
 
         }
-    }
-    private fun printLog(message: String){
-        Log.d("TokenResponse", message)
     }
     private fun setLoggedIn() {
         // Save the login status using SharedPreferences or any other suitable method
