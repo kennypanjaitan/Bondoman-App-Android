@@ -21,15 +21,12 @@ class StatisticsViewModel(private val context: Context) : ViewModel() {
     val valueExpense: LiveData<Double> = _valueExpense
 
     fun incomeTransaction(){
-        Log.d("edf", "apakah disnikah")
         viewModelScope.launch{
-            Log.d("edf", "apakah disni")
             val response = transactionDB.transactionDao().getTypedTransaction(CategoryEnum.INCOME)
             var sum : Double = 0.0
             response.forEach{ transaction ->
                 sum += transaction.nominal
             }
-            Log.d("edf", "incomeResponse : " + sum)
             _valueIncome.apply {value = sum}
         }
     }
@@ -42,7 +39,6 @@ class StatisticsViewModel(private val context: Context) : ViewModel() {
             response.forEach{ transaction ->
                 sum = transaction.nominal
             }
-            Log.d("edf", "expenseResponse : " + sum)
             _valueExpense.apply { value = sum}
         }
     }

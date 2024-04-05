@@ -199,8 +199,6 @@ class Scan : Fragment() {
 
         client.newCall(request).enqueue(object : okhttp3.Callback{
             override fun onFailure(call: Call, e: IOException) {
-                Log.d("Service Error", e.toString())
-
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -221,11 +219,6 @@ class Scan : Fragment() {
                         val transaction = TransactionEntity(0, title, currentDate, address, latitude, longitude, price, category)
                         scanViewModel.scanTransaction(transaction)
                     }
-
-
-
-//
-                    Log.d("asd", jsonResponse.toString())
                 }
             }
 

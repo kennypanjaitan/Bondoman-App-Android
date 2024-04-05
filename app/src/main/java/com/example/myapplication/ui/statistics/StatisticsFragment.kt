@@ -70,20 +70,8 @@ class StatisticsFragment : Fragment() {
     private fun createPieChart() {
 
         val list: ArrayList<PieEntry> = ArrayList()
-
-//        Log.d("edf", "income 0 : " + statisticsViewModel.valueIncome.value.toString())
-//        Log.d("edf", "expense 0 : " + statisticsViewModel.valueExpense.value.toString())
-//
-//        val income : Float = statisticsViewModel.valueIncome.value?.toFloat() ?: 0.0f
-//        val expense : Float = statisticsViewModel.valueExpense.value?.toFloat() ?: 0.0f
-//
-//        Log.d("edf", "income 1 : $income")
-//        Log.d("edf", "expense 1 : $expense")
-
         list.add(PieEntry( income, "Income"))
         list.add(PieEntry( expense,"Expense"))
-//        list.add(PieEntry( 16000000f, "Income"))
-//        list.add(PieEntry( 4000000f,"Expense"))
 
         val pieDataSet = PieDataSet(list, "Transactions")
 
