@@ -16,13 +16,14 @@ import com.example.myapplication.retrofit.LoginResponse
 import com.example.myapplication.controllers.SnackbarController
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private var _binding: ActivityMainBinding? = null
     private lateinit var snackBarController: SnackbarController
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         if (!isLoggedIn()) {
             val sharedPreferences = getSharedPreferences("token", MODE_PRIVATE)
-            var token = sharedPreferences.getString("token", null)
+            val token = sharedPreferences.getString("token", null)
 
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
@@ -65,5 +66,10 @@ class MainActivity : AppCompatActivity() {
     private fun isLoggedIn(): Boolean {
         val sharedPreferences = getSharedPreferences("login_status", MODE_PRIVATE)
         return sharedPreferences.getBoolean("isLoggedIn", false)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

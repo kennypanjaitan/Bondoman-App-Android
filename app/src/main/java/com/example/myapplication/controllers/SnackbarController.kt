@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.onEach
 object SnackbarController {
     private lateinit var snackbar: Snackbar
     private lateinit var connectivityObserver: ConnectivityObserver
+    private var isNetworkAvailable = true
 
     private fun isSnackbarShown(): Boolean =
         this::snackbar.isInitialized && snackbar.isShown
@@ -22,10 +23,24 @@ object SnackbarController {
     fun observeStatus(view: View, lifecycleScope: LifecycleCoroutineScope) {
         connectivityObserver.observe().onEach {
             when (it) {
-                ConnectivityObserver.Status.Available -> showSnackbar(view, "Network available", Snackbar.LENGTH_SHORT)
-                ConnectivityObserver.Status.Unavailable -> showSnackbar(view, "Network unavailable", Snackbar.LENGTH_INDEFINITE)
-                ConnectivityObserver.Status.Losing -> showSnackbar(view, "Network losing", Snackbar.LENGTH_INDEFINITE)
-                ConnectivityObserver.Status.Lost -> showSnackbar(view, "Network lost", Snackbar.LENGTH_INDEFINITE)
+                ConnectivityObserver.Status.Available -> {
+                    if (!isNetworkAvailable) {
+                        showSnackbar(view, "Network available", Snackbar.LENGTH_SHORT)
+                        isNetworkAvailable = true
+                    }
+                }
+                ConnectivityObserver.Status.Unavailable -> {
+                    showSnackbar(view, "Network unavailable", Snackbar.LENGTH_INDEFINITE)
+                    isNetworkAvailable = false
+                }
+                ConnectivityObserver.Status.Losing -> {
+                    showSnackbar(view, "Network losing", Snackbar.LENGTH_INDEFINITE)
+                    isNetworkAvailable = false
+                }
+                ConnectivityObserver.Status.Lost -> {
+                    showSnackbar(view, "Network lost", Snackbar.LENGTH_INDEFINITE)
+                    isNetworkAvailable = false
+                }
             }
         }.launchIn(lifecycleScope)
     }
