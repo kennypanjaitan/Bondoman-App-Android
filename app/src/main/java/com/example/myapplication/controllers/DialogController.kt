@@ -5,19 +5,22 @@ import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 object DialogController {
-    private lateinit var dialogAlert: AlertDialog
-    private lateinit var dialogConfirmation: AlertDialog
+    private var dialog: AlertDialog? = null
 
     private fun cantShowDialog(): Boolean =
-        (this::dialogAlert.isInitialized && dialogAlert.isShowing) ||
-                (this::dialogConfirmation.isInitialized && dialogConfirmation.isShowing)
+        dialog?.isShowing == true
+
+    private fun dismissDialogs() {
+        dialog?.dismiss()
+        dialog = null
+    }
 
     fun showDialogAlert(context: Context, title: String, message: String) {
         if (cantShowDialog()) { return }
-        dialogAlert = MaterialAlertDialogBuilder(context)
+        dialog = MaterialAlertDialogBuilder(context)
             .setTitle(title)
             .setMessage(message)
-            .setPositiveButton("Close", null)
+            .setPositiveButton("Close") { _, _ -> this.dismissDialogs() }
             .setCancelable(false)
             .create()
             .apply {
@@ -36,7 +39,7 @@ object DialogController {
         callbackNeg: (() -> Unit)?
     ) {
         if (cantShowDialog()) { return }
-        dialogConfirmation = MaterialAlertDialogBuilder(context)
+        dialog = MaterialAlertDialogBuilder(context)
             .setTitle(title)
             .setMessage(message)
             .setPositiveButton(positiveText) { _, _ -> callbackPos() }
@@ -44,6 +47,7 @@ object DialogController {
                 if (callbackNeg != null) {
                     callbackNeg()
                 }
+                this.dismissDialogs()
             }
             .setCancelable(false)
             .create()
@@ -61,11 +65,11 @@ object DialogController {
     ) {
         if (cantShowDialog()) { return }
         var checkedItem = 0
-        dialogAlert = MaterialAlertDialogBuilder(context)
+        dialog = MaterialAlertDialogBuilder(context)
             .setTitle(title)
             .setSingleChoiceItems(items, checkedItem) { _, which -> checkedItem = which }
             .setPositiveButton("Confirm") { _, _ -> callback(checkedItem) }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton("Cancel") { _, _ -> this.dismissDialogs() }
             .setCancelable(false)
             .create()
             .apply {
